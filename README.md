@@ -7,7 +7,6 @@
 [![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Google Gemini](https://img.shields.io/badge/Google_Gemini-1.5_Flash-8E75B2?logo=google&logoColor=white)](https://ai.google.dev/)
-[![Firebase](https://img.shields.io/badge/Firebase-12-FFCA28?logo=firebase&logoColor=black)](https://firebase.google.com/)
 
 ---
 
@@ -31,7 +30,6 @@ Built for **Hack2Skill's PromptWars: Virtual (Exclusive Edition)** hackathon und
 - **Risk-Level Categorization**: Color-coded risk indicators (**High**, **Medium**, **Low**) with visual badges and border accents for quick vulnerability assessment.
 - **Plain-Language Explanations**: Converts complex legal terms and latent obligations into clear, accessible language.
 - **Targeted Lawyer Inquiries**: Generates actionable, context-aware questions you can bring directly to your legal counsel.
-- **Persistent Analysis History**: Automatically saves analysis sessions with timestamps, backed by **Firebase Firestore** (with anonymous authentication) and seamless **local storage fallback**.
 - **Interactive Sample Clauses & Demo Mode**: Pre-loaded with representative clauses (Indemnity & Liability, Non-Compete, Confidentiality & IP) and a one-click simulation mode to evaluate all interface capabilities instantly.
 - **In-App API Key Configuration**: Configure your Google Gemini API key easily within the interface (stored securely in local browser storage) or via project environment variables.
 - **Modern Responsive Dark UI**: Sleek dark-mode aesthetic built with Tailwind CSS, featuring skeleton shimmer loading states, error boundaries, and one-click clause copying.
@@ -56,7 +54,6 @@ The core generative intelligence in LegalAssist AI relies on Google's Gemini mod
 - **Frontend**: [React 19](https://react.dev/) & [Vite 8](https://vitejs.dev/)
 - **Styling**: [Tailwind CSS 3.4](https://tailwindcss.com/), PostCSS, Autoprefixer
 - **Generative AI**: [Google Gemini API](https://ai.google.dev/) (`@google/generative-ai` SDK, Gemini 1.5 Flash)
-- **Database & Authentication**: [Firebase 12](https://firebase.google.com/) (Cloud Firestore + Anonymous Authentication)
 - **Testing**: [Vitest 5](https://vitest.dev/), React Testing Library, JSDOM
 - **Code Quality**: [Oxlint](https://oxc.rs/)
 
@@ -85,7 +82,7 @@ The core generative intelligence in LegalAssist AI relies on Google's Gemini mod
    ```bash
    cp .env.example .env
    ```
-   Open `.env` and fill in your Gemini API key and Firebase credentials (see details below).
+   Open `.env` and fill in your Gemini API key (see details below). You can also configure your API key directly in the application UI without modifying `.env`.
 
 4. **Run the local development server**:
    ```bash
@@ -108,15 +105,6 @@ Configure these variables in your root `.env` file (refer to [`.env.example`](.e
 |---|---|---|
 | `VITE_GEMINI_API_KEY` | Yes (or via in-app UI) | Google Gemini API key (obtainable at [Google AI Studio](https://aistudio.google.com/app/apikey)) |
 | `VITE_GEMINI_MODEL` | No | Target Gemini model name (defaults to `gemini-1.5-flash`) |
-| `VITE_FIREBASE_API_KEY` | Optional | Firebase Web API key |
-| `VITE_FIREBASE_AUTH_DOMAIN` | Optional | Firebase Authentication domain (e.g., `project-id.firebaseapp.com`) |
-| `VITE_FIREBASE_PROJECT_ID` | Optional | Firebase project ID |
-| `VITE_FIREBASE_STORAGE_BUCKET` | Optional | Firebase Cloud Storage bucket URL |
-| `VITE_FIREBASE_MESSAGING_SENDER_ID` | Optional | Firebase Cloud Messaging sender ID |
-| `VITE_FIREBASE_APP_ID` | Optional | Firebase Web Application ID |
-| `VITE_FIREBASE_MEASUREMENT_ID` | Optional | Firebase Google Analytics measurement ID |
-
-> **Note:** If Firebase credentials are not provided, the application will automatically fall back to browser local storage so sessions and history continue working smoothly.
 
 ---
 
@@ -132,7 +120,6 @@ npm run test
 ### Test Coverage Highlights
 - **Parser & Schema Validation** ([`parseGeminiResponse.test.js`](src/utils/parseGeminiResponse.test.js)): Verifies code fence stripping, JSON bracket extraction, missing field handling, and risk level enum validation.
 - **Gemini Service** ([`geminiService.test.js`](src/services/geminiService.test.js)): Tests model configuration, prompt assembly, API key checks, and exception propagation.
-- **Firebase Services** ([`authService.test.js`](src/services/authService.test.js), [`firestoreService.test.js`](src/services/firestoreService.test.js)): Tests anonymous authentication, document storage, and query fallback logic.
 - **UI Components** ([`ClauseCard.test.jsx`](src/components/ClauseCard.test.jsx), [`ResultsList.test.jsx`](src/components/ResultsList.test.jsx)): Verifies risk badge styling, question presentation, and clipboard interactions.
 
 ---

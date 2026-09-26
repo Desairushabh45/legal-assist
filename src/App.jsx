@@ -1,14 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import {
   analyzeClause,
   getDemoAnalysis,
   getGeminiApiKey,
   setGeminiApiKey,
 } from './services/geminiService'
-import { signInAnon, onAuthChange } from './services/authService'
-import { saveAnalysis, getUserAnalyses } from './services/firestoreService'
 import ResultsList from './components/ResultsList'
-import HistoryDrawer from './components/HistoryDrawer'
 import SkeletonResults from './components/SkeletonResults'
 import ApiKeyModal from './components/ApiKeyModal'
 
@@ -118,51 +115,6 @@ export default function App() {
   const [hasApiKey, setHasApiKey] = useState(() => Boolean(getGeminiApiKey()))
   const [isKeyModalOpen, setIsKeyModalOpen] = useState(false)
 
-  // Authentication & History State
-  const [currentUser, setCurrentUser] = useState(null)
-  const [history, setHistory] = useState([])
-  const [isHistoryLoading, setIsHistoryLoading] = useState(false)
-  const [isHistoryOpen, setIsHistoryOpen] = useState(false)
-  const [saveStatus, setSaveStatus] = useState('')
-
-  const fetchHistory = async (uid) => {
-    if (!uid) return
-    setIsHistoryLoading(true)
-    try {
-      const analyses = await getUserAnalyses(uid)
-      setHistory(analyses)
-    } catch (err) {
-      console.warn('Could not load user analyses:', err.message)
-    } finally {
-      setIsHistoryLoading(false)
-    }
-  }
-
-  // Sign in anonymously on mount and listen to auth changes
-  useEffect(() => {
-    let isMounted = true
-
-    const unsubscribe = onAuthChange(async (user) => {
-      if (!isMounted) return
-      setCurrentUser(user)
-      if (user?.uid) {
-        fetchHistory(user.uid)
-      } else {
-        fetchHistory('demo-local-user')
-      }
-    })
-
-    // Initiate anonymous sign-in
-    signInAnon().catch((err) => {
-      console.warn('Anonymous sign-in could not be completed:', err.message)
-    })
-
-    return () => {
-      isMounted = false
-      unsubscribe()
-    }
-  }, [])
-
   const handleSaveApiKey = (key) => {
     setGeminiApiKey(key)
     setHasApiKey(Boolean(key && key.trim()))
@@ -178,22 +130,12 @@ export default function App() {
 
     setContractText(textToAnalyze)
     setErrorMessage('')
-    setSaveStatus('')
     setIsLoading(true)
 
-    setTimeout(async () => {
+    setTimeout(() => {
       const demoResults = getDemoAnalysis(textToAnalyze)
       setResults(demoResults)
       setIsLoading(false)
-
-      const uid = currentUser?.uid || 'demo-local-user'
-      try {
-        await saveAnalysis(uid, textToAnalyze, demoResults)
-        setSaveStatus('Demo analysis complete (Saved to history)')
-        await fetchHistory(uid)
-      } catch (err) {
-        console.warn('Could not auto-save analysis:', err.message)
-      }
     }, 600)
   }
 
@@ -211,21 +153,11 @@ export default function App() {
     }
 
     setErrorMessage('')
-    setSaveStatus('')
     setIsLoading(true)
 
     try {
       const parsedResults = await analyzeClause(contractText)
       setResults(parsedResults)
-
-      const uid = currentUser?.uid || 'demo-local-user'
-      try {
-        await saveAnalysis(uid, contractText, parsedResults)
-        setSaveStatus('Saved to your history')
-        await fetchHistory(uid)
-      } catch (saveError) {
-        console.warn('Could not auto-save analysis:', saveError.message)
-      }
     } catch (error) {
       console.error('Error analyzing clause:', error)
       setErrorMessage(error.message || 'An error occurred during analysis.')
@@ -238,21 +170,11 @@ export default function App() {
     setContractText('')
     setResults([])
     setErrorMessage('')
-    setSaveStatus('')
-  }
-
-  const handleSelectHistoryItem = (item) => {
-    setContractText(item.clauseText || '')
-    setResults(item.results || [])
-    setErrorMessage('')
-    setSaveStatus('Loaded from past analysis')
-    setIsHistoryOpen(false)
   }
 
   const handleApplySample = (sampleText) => {
     setContractText(sampleText)
     setErrorMessage('')
-    setSaveStatus('')
     const inputElement = document.getElementById('contract-input')
     if (inputElement) {
       inputElement.focus()
@@ -297,7 +219,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* Badges & History Toggle */}
+        {/* Badges & Key Config */}
         <div className="flex items-center justify-between sm:justify-end gap-2.5 w-full sm:w-auto">
           {/* Gemini API Key Toggle Button */}
           <button
@@ -320,28 +242,6 @@ export default function App() {
             </svg>
             <span className="whitespace-nowrap">Powered by Gemini</span>
           </div>
-
-          {/* History Toggle Button */}
-          <button
-            type="button"
-            onClick={() => setIsHistoryOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 hover:border-slate-700 active:scale-95 transition-all duration-150 shadow-sm shrink-0"
-          >
-            <svg className="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <span>History</span>
-            {history.length > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                {history.length}
-              </span>
-            )}
-          </button>
         </div>
       </header>
 
@@ -392,7 +292,6 @@ export default function App() {
             onChange={(e) => {
               setContractText(e.target.value)
               if (errorMessage) setErrorMessage('')
-              if (saveStatus) setSaveStatus('')
             }}
           />
 
@@ -462,17 +361,7 @@ export default function App() {
             </div>
           )}
 
-          {/* Success Save Banner */}
-          {saveStatus && (
-            <div className="mt-3.5 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs flex items-center gap-2 animate-fade-in">
-              <svg className="w-4 h-4 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              <span>{saveStatus}</span>
-            </div>
-          )}
-
-          {/* Action Row: responsive flex stacking on mobile */}
+          {/* Action Row */}
           <div className="mt-4 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
             <p className="text-xs text-slate-500 text-center sm:text-left">
               Powered by Google Gemini 1.5 &bull; Real-time Risk Categorization
@@ -602,16 +491,6 @@ export default function App() {
           </div>
         )}
       </main>
-
-      {/* History Slide-out Drawer */}
-      <HistoryDrawer
-        isOpen={isHistoryOpen}
-        onClose={() => setIsHistoryOpen(false)}
-        history={history}
-        isLoading={isHistoryLoading}
-        onSelectAnalysis={handleSelectHistoryItem}
-        onRefresh={() => currentUser?.uid && fetchHistory(currentUser.uid)}
-      />
 
       {/* Gemini API Key Configuration Modal */}
       <ApiKeyModal
