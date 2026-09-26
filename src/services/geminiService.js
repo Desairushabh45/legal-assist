@@ -107,11 +107,8 @@ export async function analyzeClause(clauseText, customApiKey = '') {
 
   const genAI = new GoogleGenerativeAI(apiKey.trim());
 
-  // Use gemini-2.5-flash as default, configurable via VITE_GEMINI_MODEL
-  const modelName = import.meta.env.VITE_GEMINI_MODEL || 'gemini-2.5-flash';
-
   const model = genAI.getGenerativeModel({
-    model: modelName,
+    model: import.meta.env.VITE_GEMINI_MODEL || 'gemini-3.5-flash-lite',
     generationConfig: {
       responseMimeType: 'application/json',
     },

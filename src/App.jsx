@@ -364,7 +364,7 @@ export default function App() {
           {/* Action Row */}
           <div className="mt-4 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
             <p className="text-xs text-slate-500 text-center sm:text-left">
-              Powered by Google Gemini 2.5 &bull; Real-time Risk Categorization
+              Powered by Google Gemini &bull; Real-time Risk Categorization
             </p>
             <div className="flex items-center gap-2.5 justify-end">
               <button

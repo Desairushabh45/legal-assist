@@ -104,7 +104,7 @@ Configure these variables in your root `.env` file (refer to [`.env.example`](.e
 | Variable | Required | Description |
 |---|---|---|
 | `VITE_GEMINI_API_KEY` | Yes (or via in-app UI) | Google Gemini API key (obtainable at [Google AI Studio](https://aistudio.google.com/app/apikey)) |
-| `VITE_GEMINI_MODEL` | No | Target Gemini model name (defaults to `gemini-2.5-flash`) |
+| `VITE_GEMINI_MODEL` | No | Target Gemini model name (defaults to `gemini-3.5-flash-lite`) |
 
 ---
 

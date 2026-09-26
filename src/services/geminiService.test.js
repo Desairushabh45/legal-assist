@@ -42,7 +42,7 @@ describe('geminiService - analyzeClause', () => {
     await analyzeClause(inputClause)
 
     expect(mockGetGenerativeModel).toHaveBeenCalledWith({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.5-flash-lite',
       generationConfig: {
         responseMimeType: 'application/json',
       },
