@@ -6,7 +6,7 @@
 [![Built with React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Google Gemini](https://img.shields.io/badge/Google_Gemini-1.5_Flash-8E75B2?logo=google&logoColor=white)](https://ai.google.dev/)
+[![Google Gemini](https://img.shields.io/badge/Google_Gemini-2.5_Flash-8E75B2?logo=google&logoColor=white)](https://ai.google.dev/)
 
 ---
 
@@ -42,7 +42,7 @@ The core generative intelligence in LegalAssist AI relies on Google's Gemini mod
 
 | Feature | Gemini Integration | File / Function | Description |
 |---|---|---|---|
-| **Clause Risk Analysis** | Gemini 1.5 Flash (`gemini-1.5-flash`), structured JSON output mode | [`src/services/geminiService.js`](src/services/geminiService.js) &rarr; `analyzeClause()` | Prompts Google Gemini with specialized legal assistance system instructions and enforces a structured JSON array schema containing `clauseText`, `riskLevel`, `explanation`, and `suggestedQuestion`. |
+| **Clause Risk Analysis** | Gemini 2.5 Flash (`gemini-2.5-flash`), structured JSON output mode | [`src/services/geminiService.js`](src/services/geminiService.js) &rarr; `analyzeClause()` | Prompts Google Gemini with specialized legal assistance system instructions and enforces a structured JSON array schema containing `clauseText`, `riskLevel`, `explanation`, and `suggestedQuestion`. |
 | **Response Validation & Sanitization** | Safe JSON parsing, fence cleaning, and schema validation | [`src/utils/parseGeminiResponse.js`](src/utils/parseGeminiResponse.js) &rarr; `parseGeminiResponse()` | Sanitizes raw AI outputs, strips markdown code fences (` ```json `), validates required keys, and verifies that `riskLevel` conforms to `"low" \| "medium" \| "high"`. |
 | **Simulated Demo Engine** | Pre-structured sample clause analysis mappings | [`src/services/geminiService.js`](src/services/geminiService.js) &rarr; `getDemoAnalysis()` | Generates realistic, structured risk evaluations for sample contracts when testing without an active Gemini API key. |
 | **Dynamic Key Management** | Hybrid environment and browser storage resolution | [`src/services/geminiService.js`](src/services/geminiService.js) &rarr; `getGeminiApiKey()`, `setGeminiApiKey()` | Dynamically resolves API keys from `.env` or in-app modal configuration, enabling zero-config evaluation. |
@@ -53,7 +53,7 @@ The core generative intelligence in LegalAssist AI relies on Google's Gemini mod
 
 - **Frontend**: [React 19](https://react.dev/) & [Vite 8](https://vitejs.dev/)
 - **Styling**: [Tailwind CSS 3.4](https://tailwindcss.com/), PostCSS, Autoprefixer
-- **Generative AI**: [Google Gemini API](https://ai.google.dev/) (`@google/generative-ai` SDK, Gemini 1.5 Flash)
+- **Generative AI**: [Google Gemini API](https://ai.google.dev/) (`@google/generative-ai` SDK, Gemini 2.5 Flash)
 - **Testing**: [Vitest 5](https://vitest.dev/), React Testing Library, JSDOM
 - **Code Quality**: [Oxlint](https://oxc.rs/)
 
@@ -104,7 +104,7 @@ Configure these variables in your root `.env` file (refer to [`.env.example`](.e
 | Variable | Required | Description |
 |---|---|---|
 | `VITE_GEMINI_API_KEY` | Yes (or via in-app UI) | Google Gemini API key (obtainable at [Google AI Studio](https://aistudio.google.com/app/apikey)) |
-| `VITE_GEMINI_MODEL` | No | Target Gemini model name (defaults to `gemini-1.5-flash`) |
+| `VITE_GEMINI_MODEL` | No | Target Gemini model name (defaults to `gemini-2.5-flash`) |
 
 ---
 
